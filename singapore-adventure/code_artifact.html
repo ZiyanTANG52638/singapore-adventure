@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新马地标大探险 (Singapore & Malaysia Landmark Adventure)</title>
+    <!-- Tailwind CSS for modern, responsive UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons for neat UI elements -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Nunito:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Nunito', 'ZCOOL KuaiLe', system-ui, -apple-system, sans-serif;
+            background-color: #f0fdf4;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .cartoon-shadow {
+            box-shadow: 0 8px 0px 0px #1e3a8a;
+        }
+        
+        .cartoon-shadow-green {
+            box-shadow: 0 8px 0px 0px #115e59;
+        }
+
+        .cartoon-shadow-amber {
+            box-shadow: 0 8px 0px 0px #92400e;
+        }
+
+        .cartoon-border {
+            border: 4px solid #1e3a8a;
+        }
+
+        /* Standard ruby style for pinyin alignment */
+        ruby {
+            ruby-position: over;
+        }
+        rt {
+            font-size: 0.65em;
+            color: #2563eb;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            padding-bottom: 0.1rem;
+        }
+
+        /* Hide pinyin when toggled off */
+        body.hide-pinyin rt {
+            display: none !important;
+        }
+
+        /* Card flip styles for Memory Match */
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Animations */
+        @keyframes custom-bounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+        }
+        .animate-bounce-slow {
+            animation: custom-bounce 3s infinite ease-in-out;
+        }
+
+        /* Flashlight effect for Night Safari with explicit fallbacks to avoid screen blank-outs on Safari */
+        .safari-mask {
+            background: radial-gradient(circle 80px at var(--x, 50%) var(--y, 50%), transparent 99%, rgba(15, 23, 42, 0.96) 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800 overflow-x-hidden">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-blue-500 text-white p-4 cartoon-border border-t-0 border-x-0 sticky top-0 z-50 shadow-md">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <!-- App Logo -->
+            <div class="flex items-center gap-2">
+                <span class="text-4xl animate-bounce-slow">✈️</span>
+                <div>
+                    <h1 class="text-2xl font-black tracking-wider text-yellow-300 flex items-center gap-1">
+                        <ruby>新马大探险<rt>xīn mǎ dà tàn xiǎn</rt></ruby>
+                    </h1>
+                    <p class="text-[11px] text-blue-100 font-bold tracking-wider">Singapore & Malaysia Ultimate Explorer (Tablet Edition)</p>
+                </div>
+            </div>
+            
+            <!-- Controls Grid -->
+            <div class="flex items-center gap-3">
+                <!-- Pinyin Switcher Button -->
+                <button onclick="togglePinyin()" id="pinyin-btn" class="bg-yellow-400 hover:bg-yellow-300 text-blue-950 text-sm font-black px-3.5 py-2 rounded-2xl border-2 border-blue-900 shadow-sm transition-all flex items-center gap-1">
+                    <span>拼音: 开</span>
+                </button>
+                
+                <!-- Star Count -->
+                <div class="bg-blue-700 px-4 py-2 rounded-2xl flex items-center gap-1 border-2 border-white">
+                    <span class="text-yellow-300 text-xl font-black" id="star-count">0</span>
+                    <span class="text-lg">⭐</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN WORKSPACE: Adaptive Grid for Tablets -->
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 flex flex-col gap-6">
+        
+        <!-- TWO-COLUMN LAYOUT FOR TABLET/DESKTOP -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- LEFT SECTION: MAP OR QUEST GAME HUB (8 Columns on Large Screens) -->
+            <div class="lg:col-span-8 flex flex-col gap-4">
+                
+                <!-- SCREEN 1: TABLET WIDE MAP VIEW -->
+                <div id="screen-map" class="w-full flex flex-col gap-4">
+                    <!-- Informative Quest Header -->
+                    <div class="bg-white p-4 rounded-3xl cartoon-border cartoon-shadow">
+                        <h3 class="text-lg font-black text-blue-600 mb-1 flex items-center gap-2">
+                            <span>🧭</span>
+                            <span><ruby>旅行家航海大地图<rt>lǚ xíng jiā háng hǎi dà dì tú</rt></ruby> (Interactive Adventure Map):</span>
+                        </h3>
+                        <p class="text-sm font-bold text-slate-600 leading-relaxed">
+                            点击亮黄色闪烁的景地标徽章，通关趣味挑战收集贴纸！同时可以点击地图上的<span class="text-blue-600 font-extrabold">马六甲海峡</span>、<span class="text-orange-600 font-extrabold">赤道线</span>和<span class="text-emerald-600 font-extrabold">马来半岛</span>学习有趣的地理秘密哦！
+                        </p>
+                    </div>
+
+                    <!-- Beautiful Wide Map Container with Mainland & Strait Representation -->
+                    <div class="relative w-full aspect-[16/10] bg-sky-200 rounded-3xl cartoon-border overflow-hidden shadow-inner select-none">
+                        <!-- Sea Pattern Dapples -->
+                        <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#2563eb_15%,transparent_15%)] [background-size:20px_20px]"></div>
+
+                        <!-- GEOGRAPHIC SHAPES -->
+                        <!-- Malay Peninsula Mainland Outline -->
+                        <div class="absolute top-0 left-4 w-7/12 h-[65%] bg-emerald-300 rounded-br-[120px] rounded-bl-[40px] border-r-4 border-b-4 border-dashed border-emerald-500 opacity-80 flex items-start p-4">
+                            <span class="text-xs font-black text-emerald-800 tracking-wider bg-white/70 px-2 py-0.5 rounded-lg border border-emerald-600">
+                                <ruby>马来半岛<rt>mǎ lái bàn dǎo</rt></ruby> (Malay Peninsula)
+                            </span>
+                        </div>
+
+                        <!-- Singapore Island Outline (At the bottom tip of Malacca strait) -->
+                        <div class="absolute bottom-6 left-[48%] w-[24%] h-[16%] bg-teal-300 rounded-full border-4 border-dashed border-teal-500 opacity-95 flex items-center justify-center shadow-md">
+                            <span class="text-[10px] font-black text-teal-900 tracking-wider bg-white/80 px-1.5 py-0.5 rounded-md">
+                                <ruby>新加坡岛<rt>xīn jiā pō dǎo</rt></ruby> (Singapore Island)
+                            </span>
+                        </div>
+
+                        <!-- Decorative Sea Waves and Sailboat -->
+                        <span class="absolute top-24 right-1/4 text-3xl animate-pulse">⛵</span>
+                        <span class="absolute bottom-16 left-20 text-3xl animate-bounce">🐬</span>
+                        <span class="absolute top-12 left-1/3 text-xl opacity-40">🐋</span>
+
+                        <!-- GEOGRAPHIC KNOWLEDGE HOTSPOTS (Clickable Geography Cards) -->
+                        <!-- Malacca Strait -->
+                        <button onclick="showGeoFact(0)" class="absolute top-[52%] left-[18%] bg-blue-100 hover:bg-blue-200 text-blue-900 border-2 border-blue-500 rounded-full px-2.5 py-1 text-[11px] font-black shadow-md transition-all hover:scale-105 active:scale-95 flex items-center gap-1 z-20">
+                            <span>🌊</span> <ruby>马六甲海峡<rt>mǎ liù jiǎ hǎi xiá</rt></ruby> (Strait of Malacca)
+                        </button>
+
+                        <!-- Singapore Strait -->
+                        <button onclick="showGeoFact(1)" class="absolute bottom-4 left-[64%] bg-sky-100 hover:bg-sky-200 text-sky-900 border-2 border-sky-500 rounded-full px-2.5 py-1 text-[11px] font-black shadow-md transition-all hover:scale-105 active:scale-95 flex items-center gap-1 z-20">
+                            <span>🚢</span> <ruby>新加坡海峡<rt>xīn jiā pō hǎi xiá</rt></ruby> (Singapore Strait)
+                        </button>
+
+                        <!-- The Equator line decoration -->
+                        <div class="absolute top-[78%] left-0 right-0 h-1 border-t-4 border-dashed border-red-400 opacity-60 flex justify-end pr-4 select-none">
+                            <span class="text-[9px] text-red-600 font-bold -mt-4 bg-white px-1.5 py-0.5 rounded border border-red-300">
+                                ☀️ <ruby>接近赤道线<rt>jiē jìn chì dào xiàn</rt></ruby> (Near Equator Line)
+                            </span>
+                        </div>
+
+                        <!-- 8 LANDMARK PINS -->
+                        <!-- Pin 0: Changi Airport (SG) -->
+                        <button onclick="openQuest(0)" id="pin-0" class="absolute bottom-8 left-[58%] -translate-x-1/2 group focus:outline-none z-30">
+                            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-[10px] font-black px-1.5 py-0.5 rounded-lg border-2 border-blue-900 shadow-md whitespace-nowrap opacity-95 group-hover:scale-110 transition-transform">
+                                <ruby>樟宜机场<rt>zhāng yí jī chǎng</rt></ruby>
+                            </span>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 animate-ping absolute opacity-75"></div>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 relative shadow-lg transform hover:scale-125 transition-transform">
+                                <span class="text-xs">✈️</span>
+                            </div>
+                        </button>
+
+                        <!-- Pin 1: S.E.A. Aquarium (SG) -->
+                        <button onclick="openQuest(1)" id="pin-1" class="absolute bottom-[2%] left-[46%] -translate-x-1/2 group focus:outline-none z-30">
+                            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-[10px] font-black px-1.5 py-0.5 rounded-lg border-2 border-blue-900 shadow-md whitespace-nowrap opacity-95 group-hover:scale-110 transition-transform">
+                                <ruby>圣淘沙水族馆<rt>shèng táo shā shuǐ zú guǎn</rt></ruby>
+                            </span>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 animate-ping absolute opacity-75"></div>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 relative shadow-lg transform hover:scale-125 transition-transform">
+                                <span class="text-xs">🐬</span>
+                            </div>
+                        </button>
+
+                        <!-- Pin 2: Fort Canning & Clarke Quay (SG) -->
+                        <button onclick="openQuest(2)" id="pin-2" class="absolute bottom-[10%] left-[51%] -translate-x-1/2 group focus:outline-none z-30">
+                            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-[10px] font-black px-1.5 py-0.5 rounded-lg border-2 border-blue-900 shadow-md whitespace-nowrap opacity-95 group-hover:scale-110 transition-transform">
+                                <ruby>克拉码头<rt>kè lā mǎ tóu</rt></ruby>
+                            </span>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 animate-ping absolute opacity-75"></div>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 relative shadow-lg transform hover:scale-125 transition-transform">
+                                <span class="text-xs">🌳</span>
+                            </div>
+                        </button>
+
+                        <!-- Pin 3: Merlion Park (SG) -->
+                        <button onclick="openQuest(3)" id="pin-3" class="absolute bottom-[14%] left-[54%] -translate-x-1/2 group focus:outline-none z-30">
+                            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-[10px] font-black px-1.5 py-0.5 rounded-lg border-2 border-blue-900 shadow-md whitespace-nowrap opacity-95 group-hover:scale-110 transition-transform">
+                                <ruby>鱼尾狮<rt>yú wěi shī</rt></ruby>
+                            </span>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 animate-ping absolute opacity-75"></div>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 relative shadow-lg transform hover:scale-125 transition-transform">
+                                <span class="text-xs">🦁</span>
+                            </div>
+                        </button>
+
+                        <!-- Pin 4: Gardens by the Bay (SG) -->
+                        <button onclick="openQuest(4)" id="pin-4" class="absolute bottom-[8%] left-[56%] -translate-x-1/2 group focus:outline-none z-30">
+                            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-[10px] font-black px-1.5 py-0.5 rounded-lg border-2 border-blue-900 shadow-md whitespace-nowrap opacity-95 group-hover:scale-110 transition-transform">
+                                <ruby>滨海湾花园<rt>bīn hǎi wān huā yuán</rt></ruby>
+                            </span>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 animate-ping absolute opacity-75"></div>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 relative shadow-lg transform hover:scale-125 transition-transform">
+                                <span class="text-xs">🌲</span>
+                            </div>
+                        </button>
+
+                        <!-- Pin 5: Night Safari (SG) -->
+                        <button onclick="openQuest(5)" id="pin-5" class="absolute bottom-[16%] left-[49%] -translate-x-1/2 group focus:outline-none z-30">
+                            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-[10px] font-black px-1.5 py-0.5 rounded-lg border-2 border-blue-900 shadow-md whitespace-nowrap opacity-95 group-hover:scale-110 transition-transform">
+                                <ruby>夜间动物园<rt>yè jiān dòng wù yuán</rt></ruby>
+                            </span>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 animate-ping absolute opacity-75"></div>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 relative shadow-lg transform hover:scale-125 transition-transform">
+                                <span class="text-xs">🐯</span>
+                            </div>
+                        </button>
+
+                        <!-- Pin 6: Petronas Twin Towers (Kuala Lumpur, MY) -->
+                        <button onclick="openQuest(6)" id="pin-6" class="absolute top-[32%] left-[28%] -translate-x-1/2 group focus:outline-none z-30">
+                            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-[10px] font-black px-1.5 py-0.5 rounded-lg border-2 border-blue-900 shadow-md whitespace-nowrap opacity-95 group-hover:scale-110 transition-transform">
+                                <ruby>吉隆坡双子塔<rt>jí lóng pō shuāng tǎ</rt></ruby>
+                            </span>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 animate-ping absolute opacity-75"></div>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 relative shadow-lg transform hover:scale-125 transition-transform">
+                                <span class="text-xs">🏢</span>
+                            </div>
+                        </button>
+
+                        <!-- Pin 7: Batu Caves (MY) -->
+                        <button onclick="openQuest(7)" id="pin-7" class="absolute top-[26%] left-[34%] -translate-x-1/2 group focus:outline-none z-30">
+                            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-[10px] font-black px-1.5 py-0.5 rounded-lg border-2 border-blue-900 shadow-md whitespace-nowrap opacity-95 group-hover:scale-110 transition-transform">
+                                <ruby>黑风洞<rt>hēi fēng dòng</rt></ruby>
+                            </span>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 animate-ping absolute opacity-75"></div>
+                            <div class="w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-blue-900 relative shadow-lg transform hover:scale-125 transition-transform">
+                                <span class="text-xs">🐵</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SCREEN 2: QUEST WORKSPACE -->
+                <div id="screen-quest" class="w-full flex flex-col gap-4 hidden">
+                    <!-- Nav Header Buttons -->
+                    <button onclick="goBackToMap()" class="self-start bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2.5 px-4 rounded-2xl cartoon-border border-slate-400 text-sm flex items-center gap-1.5 transition-all">
+                        <span>⬅️ <ruby>返回航海图<rt>fǎn huí háng hǎi tú</rt></ruby> (Back to Map)</span>
+                    </button>
+
+                    <!-- Core Quest Card -->
+                    <div class="bg-white rounded-3xl cartoon-border cartoon-shadow overflow-hidden">
+                        <!-- Location Header -->
+                        <div class="bg-blue-400 text-white p-4 flex justify-between items-center border-b-4 border-blue-900">
+                            <div>
+                                <span id="quest-country" class="text-xs bg-blue-600 font-black px-2.5 py-1 rounded-full uppercase tracking-widest">新加坡 Singapore</span>
+                                <h2 id="quest-title" class="text-2xl font-black mt-1 flex items-center gap-2">
+                                    <!-- Loaded Dynamically -->
+                                </h2>
+                            </div>
+                            <span id="quest-emoji" class="text-5xl animate-bounce-slow">✈️</span>
+                        </div>
+
+                        <!-- Fun Fact -->
+                        <div class="p-4 bg-yellow-50 border-b-4 border-blue-900">
+                            <h3 class="text-base font-black text-amber-800 flex items-center gap-1.5 mb-1">
+                                <span>💡</span>
+                                <span><ruby>旅行知识卡<rt>lǚ xíng zhī shi kǎ</rt></ruby> (Travel Fact):</span>
+                            </h3>
+                            <p id="quest-funfact" class="text-sm font-bold text-slate-700 leading-relaxed">
+                                <!-- Loaded Dynamically -->
+                            </p>
+                        </div>
+
+                        <!-- Interactive Segment -->
+                        <div class="p-4 bg-white">
+                            <div class="flex items-center justify-between mb-3.5">
+                                <h4 id="interaction-instruction" class="text-base font-black text-blue-900 leading-snug">
+                                    <!-- Loaded Dynamically -->
+                                </h4>
+                                <span id="interaction-mode-badge" class="text-xs bg-purple-100 text-purple-700 font-black px-2.5 py-1 rounded-full border-2 border-purple-300">模式</span>
+                            </div>
+
+                            <!-- INTERACTION WORKSPACES -->
+                            <!-- Mode 1: Changi Airport Treasure Hunt -->
+                            <div id="container-changi-treasure" class="hidden flex flex-col gap-3">
+                                <div class="relative w-full aspect-[16/10] bg-gradient-to-b from-teal-100 to-sky-100 rounded-2xl border-4 border-blue-900 overflow-hidden" id="changi-hunting-canvas">
+                                    <!-- Jewell Waterfall Drawing Representation -->
+                                    <div class="absolute inset-x-0 top-0 h-1/3 bg-teal-200/50 flex justify-center items-center font-black text-sky-800 text-xs">✨ 樟宜机场星耀瀑布 (The Jewel Rain Vortex) ✨</div>
+                                    <div class="absolute top-[20%] left-1/2 -translate-x-1/2 text-8xl z-0 opacity-80 animate-pulse select-none">⛲☔</div>
+                                    <div class="absolute bottom-4 left-6 text-5xl opacity-40 select-none">🏢</div>
+                                    
+                                    <!-- Hidden Objects -->
+                                    <button onclick="foundChangiItem(0)" id="changi-item-0" class="absolute top-12 left-24 text-3xl p-2 focus:outline-none transition-transform hover:scale-125">🧳</button>
+                                    <button onclick="foundChangiItem(1)" id="changi-item-1" class="absolute bottom-4 left-[58%] text-3xl p-2 focus:outline-none transition-transform hover:scale-125">🎫</button>
+                                    <button onclick="foundChangiItem(2)" id="changi-item-2" class="absolute top-1/3 right-12 text-3xl p-2 focus:outline-none transition-transform hover:scale-125">🍔</button>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded-2xl border-2 border-blue-300 flex justify-around items-center">
+                                    <span class="text-xs font-black text-blue-900">请点出：</span>
+                                    <div class="flex gap-2">
+                                        <span id="changi-label-0" class="text-xs font-bold bg-white px-2 py-1 rounded-xl border border-slate-300 transition-all">🧳 行李箱</span>
+                                        <span id="changi-label-1" class="text-xs font-bold bg-white px-2 py-1 rounded-xl border border-slate-300 transition-all">🎫 登机牌</span>
+                                        <span id="changi-label-2" class="text-xs font-bold bg-white px-2 py-1 rounded-xl border border-slate-300 transition-all">🍔 椰浆饭</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mode 2: S.E.A Aquarium Memory Match -->
+                            <div id="container-aquarium-memory" class="hidden grid grid-cols-4 gap-2.5 max-w-sm mx-auto">
+                                <!-- Cards generated dynamically -->
+                            </div>
+
+                            <!-- Mode 3: Fort Canning Captain Dialogue -->
+                            <div id="container-canning-dialogue" class="hidden flex flex-col gap-3">
+                                <div class="flex gap-3 items-start bg-emerald-50 p-4 rounded-3xl border-4 border-emerald-700">
+                                    <span class="text-5xl shrink-0">⚓👨‍✈️</span>
+                                    <div>
+                                        <div class="bg-white px-3 py-1 rounded-xl border-2 border-emerald-800 text-[10px] font-black text-emerald-800 mb-2">
+                                            克拉码头船长 (River Captain)
+                                        </div>
+                                        <p class="text-sm font-black text-slate-800 mb-1" id="canning-english-bubble">
+                                            "Ahoy, adventurer! Welcome to the historic Singapore River. Ready for a boat ride?"
+                                        </p>
+                                        <p class="text-xs font-bold text-slate-500" id="canning-chinese-bubble">
+                                            “嗨，小探险家！欢迎来到历史悠久的新加坡河。准备好坐船游览了吗？”
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-2xl border-2 border-slate-300 flex flex-col gap-2" id="canning-options">
+                                    <!-- Options generated dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Mode 4: Merlion Park Quiz -->
+                            <div id="container-merlion-quiz" class="hidden flex flex-col gap-3">
+                                <div class="flex items-center justify-center p-6 bg-sky-50 rounded-2xl border-2 border-blue-200 text-6xl">
+                                    🦁💦🛳️
+                                </div>
+                                <div class="flex flex-col gap-2.5" id="merlion-quiz-options">
+                                    <!-- Options generated dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Mode 5: Gardens & Cloud Forest Sort -->
+                            <div id="container-gardens-sort" class="hidden flex flex-col gap-4">
+                                <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-2xl border-4 border-emerald-800 flex flex-col items-center justify-center text-center shadow-inner relative">
+                                    <span class="text-[10px] bg-emerald-800 text-emerald-100 font-bold px-2 py-0.5 rounded-full mb-1">待分类的自然宝物</span>
+                                    <div id="sort-item-emoji" class="text-6xl my-1 animate-bounce-slow">🌸</div>
+                                    <div id="sort-item-name" class="text-base font-black text-emerald-900">大王花 (Rafflesia)</div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="sortToZone(0)" class="bg-yellow-400 hover:bg-yellow-500 text-blue-950 p-3.5 rounded-2xl border-4 border-blue-900 cartoon-shadow flex flex-col items-center justify-center gap-1">
+                                        <span class="text-3xl">🌸</span>
+                                        <span class="text-xs font-black">花穹 (Flower Dome)</span>
+                                    </button>
+                                    <button onclick="sortToZone(1)" class="bg-teal-500 hover:bg-teal-600 text-white p-3.5 rounded-2xl border-4 border-teal-950 cartoon-shadow-green flex flex-col items-center justify-center gap-1">
+                                        <span class="text-3xl">🌫️</span>
+                                        <span class="text-xs font-black">云雾林 (Cloud Forest)</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Mode 6: Night Safari Flashlight Hunt (Optimized for Multi-touch tablets) -->
+                            <div id="container-safari-flashlight" class="hidden flex flex-col gap-3">
+                                <div class="relative w-full aspect-[16/10] bg-slate-900 rounded-2xl border-4 border-slate-950 overflow-hidden cursor-crosshair" 
+                                     id="flashlight-canvas" 
+                                     style="touch-action: none;"
+                                     onmousemove="updateFlashlight(event)" 
+                                     ontouchmove="updateFlashlightTouch(event, true)"
+                                     ontouchstart="updateFlashlightTouch(event, false)">
+                                    
+                                    <!-- Flashlight dark mask overlay with pointer-events-none -->
+                                    <div class="absolute inset-0 safari-mask pointer-events-none z-10 animate-fade-in" id="flashlight-overlay" style="--x: 50%; --y: 50%;"></div>
+                                    
+                                    <!-- Hidden animals positioned under the mask (Fully compatible with clicks & direct touch taps) -->
+                                    <button onclick="foundSafariAnimal(0)" ontouchstart="foundSafariAnimal(0)" id="safari-animal-0" class="absolute top-[30%] left-[20%] text-4xl p-4 select-none hover:scale-110 transition-transform active:scale-95 z-20" style="opacity: 0.05;">🦉</button>
+                                    <button onclick="foundSafariAnimal(1)" ontouchstart="foundSafariAnimal(1)" id="safari-animal-1" class="absolute bottom-[20%] left-[60%] text-4xl p-4 select-none hover:scale-110 transition-transform active:scale-95 z-20" style="opacity: 0.05;">🐯</button>
+                                    <button onclick="foundSafariAnimal(2)" ontouchstart="foundSafariAnimal(2)" id="safari-animal-2" class="absolute top-[50%] right-[15%] text-4xl p-4 select-none hover:scale-110 transition-transform active:scale-95 z-20" style="opacity: 0.05;">🦇</button>
+                                    
+                                    <p class="absolute bottom-2 inset-x-0 text-center text-slate-500 text-[10px] select-none pointer-events-none z-30">手指拖动照亮黑夜、点击发现野生动物！</p>
+                                </div>
+                                <div class="bg-slate-800 p-3 rounded-2xl border-2 border-slate-950 flex justify-around items-center text-slate-200">
+                                    <span class="text-xs font-black">夜巡发现单：</span>
+                                    <div class="flex gap-2">
+                                        <span id="safari-lbl-0" class="text-xs font-bold bg-slate-700 px-2.5 py-1 rounded-xl">🦉 猫头鹰</span>
+                                        <span id="safari-lbl-1" class="text-xs font-bold bg-slate-700 px-2.5 py-1 rounded-xl">🐯 夜行猛虎</span>
+                                        <span id="safari-lbl-2" class="text-xs font-bold bg-slate-700 px-2.5 py-1 rounded-xl">🦇 小蝙蝠</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mode 7: Petronas Classify -->
+                            <div id="container-twin-classify" class="hidden flex flex-col gap-3">
+                                <div class="bg-amber-50 p-6 rounded-2xl border-4 border-amber-800 flex flex-col items-center justify-center text-center">
+                                    <span class="text-xs bg-amber-800 text-amber-100 font-bold px-2 py-0.5 rounded-full mb-1">旅行行李大搜集</span>
+                                    <div id="twin-item-emoji" class="text-6xl my-1 animate-bounce-slow">🍛</div>
+                                    <div id="twin-item-name" class="text-base font-black text-amber-900">椰浆饭 (Nasi Lemak)</div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="sortTwinToCountry(0)" class="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-2xl border-4 border-blue-900 cartoon-shadow flex flex-col items-center justify-center gap-0.5">
+                                        <span class="text-2xl">🇸🇬</span>
+                                        <span class="text-xs font-black">新加坡</span>
+                                    </button>
+                                    <button onclick="sortTwinToCountry(1)" class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-2xl border-4 border-red-950 cartoon-shadow-amber flex flex-col items-center justify-center gap-0.5">
+                                        <span class="text-2xl">🇲🇾</span>
+                                        <span class="text-xs font-black">马来西亚</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Mode 8: Batu Caves Dialogue -->
+                            <div id="container-batu-dialogue" class="hidden flex flex-col gap-3">
+                                <div class="flex gap-3 items-start bg-yellow-100 p-4 rounded-3xl border-4 border-yellow-700">
+                                    <span class="text-5xl shrink-0">🐵</span>
+                                    <div>
+                                        <div class="bg-white px-3 py-1 rounded-xl border-2 border-yellow-800 text-[10px] font-black text-yellow-800 mb-2">
+                                            彩虹台阶小猴子 (Cheeky Monkey)
+                                        </div>
+                                        <p class="text-sm font-black text-slate-800 mb-1" id="batu-english-bubble">
+                                            "Hello explorer! Do you have a delicious Banana in your bag? 🍌"
+                                        </p>
+                                        <p class="text-xs font-bold text-slate-500" id="batu-chinese-bubble">
+                                            “你好探险家！你背包里有香甜好吃的香蕉吗？🍌”
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-2xl border-2 border-slate-300 flex flex-col gap-2" id="batu-options">
+                                    <!-- Options generated dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Feedback Panel -->
+                            <div id="feedback-box" class="mt-4 p-4 rounded-2xl border-4 hidden text-center font-bold text-sm leading-relaxed">
+                                反回说明
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT SECTION: EXPLORER SIDE PANEL (4 Columns on Large Screens) -->
+            <div class="lg:col-span-4 flex flex-col gap-6">
+                
+                <!-- STICKER ALBUM -->
+                <div class="bg-emerald-100 p-4 rounded-3xl cartoon-border border-emerald-800">
+                    <h4 class="text-lg font-black text-emerald-800 mb-3 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5">
+                            <span>📖</span>
+                            <span><ruby>旅行收藏手账<rt>lǚ xíng shōu cáng shǒu zhàng</rt></ruby></span>
+                        </span>
+                        <span id="album-count-side" class="text-xs bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full font-black">(0/8)</span>
+                    </h4>
+                    <!-- Dynamic Grid of 8 stickers -->
+                    <div class="grid grid-cols-4 gap-2">
+                        <div id="album-item-0" class="aspect-square bg-white rounded-2xl border-2 border-dashed border-emerald-400 flex flex-col items-center justify-center text-2xl opacity-35 transition-all" title="樟宜机场 ✈️">✈️</div>
+                        <div id="album-item-1" class="aspect-square bg-white rounded-2xl border-2 border-dashed border-emerald-400 flex flex-col items-center justify-center text-2xl opacity-35 transition-all" title="水族馆 🐬">🐬</div>
+                        <div id="album-item-2" class="aspect-square bg-white rounded-2xl border-2 border-dashed border-emerald-400 flex flex-col items-center justify-center text-2xl opacity-35 transition-all" title="克拉码头 🌳">🌳</div>
+                        <div id="album-item-3" class="aspect-square bg-white rounded-2xl border-2 border-dashed border-emerald-400 flex flex-col items-center justify-center text-2xl opacity-35 transition-all" title="鱼尾狮 🦁">🦁</div>
+                        <div id="album-item-4" class="aspect-square bg-white rounded-2xl border-2 border-dashed border-emerald-400 flex flex-col items-center justify-center text-2xl opacity-35 transition-all" title="滨海湾花园 🌲">🌲</div>
+                        <div id="album-item-5" class="aspect-square bg-white rounded-2xl border-2 border-dashed border-emerald-400 flex flex-col items-center justify-center text-2xl opacity-35 transition-all" title="夜间动物园 🐯">🐯</div>
+                        <div id="album-item-6" class="aspect-square bg-white rounded-2xl border-2 border-dashed border-emerald-400 flex flex-col items-center justify-center text-2xl opacity-35 transition-all" title="双子塔 🏢">🏢</div>
+                        <div id="album-item-7" class="aspect-square bg-white rounded-2xl border-2 border-dashed border-emerald-400 flex flex-col items-center justify-center text-2xl opacity-35 transition-all" title="黑风洞 🐵">🐵</div>
+                    </div>
+                </div>
+
+                <!-- COGNITIVE GEOGRAPHY SCIENCE DESK -->
+                <div class="bg-yellow-50 p-4 rounded-3xl cartoon-border border-yellow-700">
+                    <h4 class="text-base font-black text-amber-900 mb-2.5 flex items-center gap-1.5">
+                        <span>🗺️</span>
+                        <span><ruby>地理科考站<rt>dì lǐ kē kǎo zhàn</rt></ruby> (Geography Station)</span>
+                    </h4>
+                    <div id="geography-desk-body" class="text-xs text-slate-700 leading-relaxed font-bold bg-white p-3 rounded-2xl border-2 border-yellow-400">
+                        点击地图上虚线圈出的地方（马六甲海峡、新加坡海峡、赤道线等），这里将实时转译小探险家雷达捕获的奇妙自然地理奥秘！
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUCCESS REWARD MODAL OVERLAY -->
+        <div id="reward-modal" class="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white rounded-3xl cartoon-border cartoon-shadow max-w-sm w-full p-6 text-center flex flex-col items-center gap-4 animate-bounce-slow">
+                <span class="text-7xl" id="reward-sticker-emoji">✈️</span>
+                <h3 class="text-2xl font-black text-emerald-600 flex flex-col items-center">
+                    <span>🎉 <ruby>探险大成功<rt>tàn xiǎn dà chéng gōng</rt></ruby>！</span>
+                    <span class="text-xs text-emerald-500 mt-1">Sticker Unlocked!</span>
+                </h3>
+                <p class="text-slate-600 font-bold" id="reward-sticker-text">你获得了一张全新的旅行纪念贴纸！</p>
+                <button onclick="claimSticker()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-6 rounded-2xl cartoon-shadow-green cartoon-border border-emerald-800 text-lg transition-all">
+                    贴入手账 📖
+                </button>
+            </div>
+        </div>
+
+        <!-- STICKER ALBUM COMPLETION CELEBRATION MODAL OVERLAY -->
+        <div id="win-modal" class="fixed inset-0 bg-slate-900/90 z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-gradient-to-b from-yellow-300 to-amber-100 rounded-3xl cartoon-border cartoon-shadow max-w-md w-full p-6 text-center flex flex-col items-center gap-4 relative overflow-hidden">
+                <span class="text-8xl">🏆🏅⚓</span>
+                <h3 class="text-2xl font-black text-amber-800 flex flex-col items-center">
+                    <span>👑 <ruby>终极大探险家<rt>zhōng jí dà tàn xiǎn jiā</rt></ruby>！</span>
+                    <span class="text-xs text-amber-700 tracking-wider">SG & MY Explorer Champion!</span>
+                </h3>
+                <p class="text-slate-700 font-bold text-sm leading-relaxed">
+                    太棒了！你完美通过了樟宜机场、水族馆、福康宁公园、鱼尾狮、滨海湾、夜间动物园以及吉隆坡的所有挑战！8张地标贴纸已完全集齐！你已经是一名博学的新马小达人啦！
+                </p>
+                
+                <button onclick="playVictoryTones()" class="bg-amber-500 hover:bg-amber-600 text-white font-black py-2.5 px-5 rounded-2xl text-xs flex items-center gap-1.5 cartoon-border border-amber-900">
+                    🔊 吹响黄金胜利号角 (Sound)
+                </button>
+
+                <button onclick="restartGame()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-3 px-6 rounded-2xl cartoon-shadow cartoon-border border-blue-900 text-lg transition-all">
+                    开始全新航程 🚀
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER / SAFETY TIP -->
+    <footer class="bg-slate-100 p-4 border-t-2 border-slate-200 text-center text-[10px] text-slate-500 mt-4 leading-normal">
+        <div class="max-w-5xl mx-auto flex flex-col gap-1">
+            <p>🛡️ <span class="font-bold">家长安全提醒与隐私说明 (For Parents)</span>：本游戏100%本地安全运行，不收集、不上传任何儿童隐私与网络位置数据，请放心体验。</p>
+        </div>
+    </footer>
+
+    <script>
+        // Interactive Geography facts
+        const geoFacts = [
+            {
+                name: "<ruby>马六甲海峡<rt>mǎ liù jiǎ hǎi xiá</rt></ruby> (Strait of Malacca)",
+                text: "🌊 <b>马六甲海峡</b>是世界上最繁忙、最著名的狭长海上‘高速公路’！它连接了印度洋 and 太平洋，从古代开始，丝绸之路上的大帆船和现在的巨型货轮，都必须从这里经过哦！"
+            },
+            {
+                name: "<ruby>新加坡海峡<rt>xīn jiā pō hǎi xiá</rt></ruby> (Singapore Strait)",
+                text: "🚢 <b>新加坡海峡</b>紧挨着新加坡岛的南侧。如果你在东海岸或者巴拉湾海滩看去，能看到数以百计、像小山一样的巨型货装集装箱轮船在排队，因为这里是亚洲的心脏大港口！"
+            }
+        ];
+
+        // Complete 8 Landmarks Data matching user request & photo "查看最近的照片.jpg"
+        const destinations = [
+            {
+                id: 0,
+                country: "新加坡 Singapore",
+                title: "<ruby>樟宜机场<rt>zhāng yí jī chǎng</rt></ruby> (Changi Airport)",
+                emoji: "✈️",
+                fact: "樟宜机场有世界最大的室内森林大瀑布！它高达40米，水流从巨大的玻璃穹顶圆洞飞流直下，在晚上还会变成超炫彩的灯光秀哦！在英文里，瀑布叫做 <span class='text-blue-600 underline font-black'>Waterfall</span>！",
+                mode: "changi-treasure",
+                instruction: "🔍 寻宝挑战：请在航站楼大堂中找到隐藏的：1.行李箱 2.登机牌 3.美味椰浆饭！"
+            },
+            {
+                id: 1,
+                country: "新加坡 Singapore",
+                title: "<ruby>圣淘沙S.E.A.水族馆<rt>shèng táo shā shuǐ zú guǎn</rt></ruby> (Sentosa S.E.A. Aquarium)",
+                emoji: "🐬",
+                fact: "这里是全亚洲最大的海洋馆之一！生活着超过10万只奇妙的海洋小动物。在英文里，鲨鱼是 <span class='text-blue-600 underline font-black'>Shark</span>，魔鬼鱼是 <span class='text-blue-600 underline font-black'>Manta Ray</span>！",
+                mode: "aquarium-memory",
+                instruction: "🧩 记忆连连看：翻转卡片，配对出 4 对一模一样的海洋小鱼吧！"
+            },
+            {
+                id: 2,
+                country: "新加坡 Singapore",
+                title: "<ruby>福康宁公园与克拉码头<rt>fú kāng níng gōng yuán bīng kè lā mǎ tóu</rt></ruby> (Fort Canning & Clarke Quay)",
+                emoji: "🌳",
+                source: "https://www.visitsingapore.com/see-do-singapore/recreation-leisure/nature-wildlife/fort-canning-park/",
+                fact: "克拉码头边有各种亮丽的小房子，夜晚能乘坐古老的木船。福康宁公园有火山一样的‘神秘绿色树洞螺旋台阶’。在英文里，游船是 <span class='text-blue-600 underline font-black'>Bumboat</span>！",
+                mode: "canning-dialogue",
+                instruction: "🗣️ 运河小英语：与码头的船长进行双语英文对话，开启精彩的游船之旅吧！"
+            },
+            {
+                id: 3,
+                country: "新加坡 Singapore",
+                title: "<ruby>鱼尾狮公园<rt>yú wěi shī gōng yuán</rt></ruby> (Merlion Park)",
+                emoji: "🦁",
+                fact: "鱼尾狮是由半只狮子和半条鱼拼起来的！它嘴里持续不断地朝大海喷出清澈的自来水！狮子在英文里是 <span class='text-blue-600 underline font-black'>Lion</span>，鱼是 <span class='text-blue-600 underline font-black'>Fish</span>！",
+                mode: "merlion-quiz",
+                instruction: "🎯 趣味问答：考考你对鱼尾狮来历和秘密的了解！"
+            },
+            {
+                id: 4,
+                country: "新加坡 Singapore",
+                title: "<ruby>滨海湾花园与云雾林<rt>bīn hǎi wān huā yuán bīng yún wù lín</rt></ruby> (Gardens by the Bay)",
+                emoji: "🌲",
+                fact: "云雾林里有一座由几万株奇特兰花覆盖、高耸入云的绿色人造大山，不断喷出凉爽的水雾。在英文里，温室叫 <span class='text-blue-600 underline font-black'>Dome</span>，雾是 <span class='text-blue-600 underline font-black'>Mist</span>！",
+                mode: "gardens-sort",
+                instruction: "🎒 分类大师：快来把珍贵的植物分放到‘花穹’或高耸神秘的‘云雾林’中！"
+            },
+            {
+                id: 5,
+                country: "新加坡 Singapore",
+                title: "<ruby>夜间野生动物园<rt>yè jiān dòng wù yuán</rt></ruby> (Night Safari)",
+                emoji: "🐯",
+                fact: "这是世界上第一个专为夜行性动物设计的动物园！晚上天黑了，我们要坐着静音的小火车，拿着微弱的光去观察狮子、豹子和蝙蝠活动。夜间叫 <span class='text-blue-600 underline font-black'>Nocturnal</span>！",
+                mode: "safari-flashlight",
+                instruction: "🔦 探照大作战：移动手电筒在漆黑的森林里搜寻这三只夜行小动物！"
+            },
+            {
+                id: 6,
+                country: "马来西亚 Malaysia",
+                title: "<ruby>吉隆坡双子塔<rt>jí lóng pō shuāng tǎ</rt></ruby> (Petronas Twin Towers)",
+                emoji: "🏢",
+                fact: "这是两座高耸入云的巨大建筑，它们不仅高，中间还由一架宏伟的‘天空之桥’连系在一起。在英文里，双子塔叫做 <span class='text-blue-600 underline font-black'>Twin Towers</span>！",
+                mode: "twin-classify",
+                instruction: "🎒 新马特产箱：你能将椰浆饭、海南鸡饭和标志分进对应的国家吗？"
+            },
+            {
+                id: 7,
+                country: "马来西亚 Malaysia",
+                title: "<ruby>黑风洞<rt>hēi fēng dòng</rt></ruby> (Batu Caves)",
+                emoji: "🐵",
+                fact: "这里是著名的彩色台阶大山洞！阶梯一共272级，全部刷上了极其鲜艳夺目的彩虹颜色！台阶旁有数百只野猴。在英文里，彩虹叫 <span class='text-blue-600 underline font-black'>Rainbow</span>！",
+                mode: "batu-dialogue",
+                instruction: "🗣️ 英文演练：和大台阶旁调皮的野生猴子来一场轻松好玩的英文对话吧！"
+            }
+        ];
+
+        // --- WEB AUDIO GENERATOR FOR SFX ---
+        function playBeep(freq, type, duration) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        function playCorrectSound() {
+            playBeep(523.25, 'sine', 0.1);
+            setTimeout(() => playBeep(659.25, 'sine', 0.1), 100);
+            setTimeout(() => playBeep(783.99, 'sine', 0.2), 200);
+        }
+
+        function playWrongSound() {
+            playBeep(200, 'triangle', 0.3);
+        }
+
+        function playVictoryTones() {
+            const melody = [523, 587, 659, 698, 783, 880, 987, 1046];
+            melody.forEach((freq, index) => {
+                setTimeout(() => playBeep(freq, 'sine', 0.15), index * 120);
+            });
+        }
+
+        // --- STATE MANAGEMENT ---
+        let stickersEarned = Array(8).fill(false);
+        let activeQuestId = null;
+
+        // Toggle Pinyin
+        function togglePinyin() {
+            playBeep(440, 'sine', 0.05);
+            const isHidden = document.body.classList.toggle('hide-pinyin');
+            document.getElementById('pinyin-btn').innerText = isHidden ? "拼音: 关" : "拼音: 开";
+        }
+
+        // Geography Click handler
+        function showGeoFact(idx) {
+            playBeep(600, 'sine', 0.1);
+            const fact = geoFacts[idx];
+            document.getElementById('geography-desk-body').innerHTML = `
+                <span class="block text-blue-800 text-sm font-black mb-1">${fact.name}</span>
+                <span>${fact.text}</span>
+            `;
+        }
+
+        // --- SCREEN ROUTING ---
+        function openQuest(id) {
+            playBeep(440, 'sine', 0.08);
+            activeQuestId = id;
+            const dest = destinations[id];
+
+            // Render header items
+            document.getElementById('quest-country').innerText = dest.country;
+            document.getElementById('quest-title').innerHTML = dest.title;
+            document.getElementById('quest-emoji').innerText = dest.emoji;
+            document.getElementById('quest-funfact').innerHTML = dest.fact;
+            document.getElementById('interaction-instruction').innerHTML = dest.instruction;
+
+            // Hide all interaction blocks
+            document.getElementById('container-changi-treasure').classList.add('hidden');
+            document.getElementById('container-aquarium-memory').classList.add('hidden');
+            document.getElementById('container-canning-dialogue').classList.add('hidden');
+            document.getElementById('container-merlion-quiz').classList.add('hidden');
+            document.getElementById('container-gardens-sort').classList.add('hidden');
+            document.getElementById('container-safari-flashlight').classList.add('hidden');
+            document.getElementById('container-twin-classify').classList.add('hidden');
+            document.getElementById('container-batu-dialogue').classList.add('hidden');
+            document.getElementById('feedback-box').classList.add('hidden');
+
+            // Route to appropriate interaction
+            if (dest.mode === "changi-treasure") {
+                initChangiTreasure();
+            } else if (dest.mode === "aquarium-memory") {
+                initAquariumMemory();
+            } else if (dest.mode === "canning-dialogue") {
+                initCanningDialogue();
+            } else if (dest.mode === "merlion-quiz") {
+                initMerlionQuiz();
+            } else if (dest.mode === "gardens-sort") {
+                initGardensSort();
+            } else if (dest.mode === "safari-flashlight") {
+                initSafariFlashlight();
+            } else if (dest.mode === "twin-classify") {
+                initTwinClassify();
+            } else if (dest.mode === "batu-dialogue") {
+                initBatuDialogue();
+            }
+
+            document.getElementById('screen-map').classList.add('hidden');
+            document.getElementById('screen-quest').classList.remove('hidden');
+        }
+
+        function goBackToMap() {
+            playBeep(350, 'sine', 0.05);
+            document.getElementById('screen-quest').classList.add('hidden');
+            document.getElementById('screen-map').classList.remove('hidden');
+        }
+
+        // --- INTERACTION: Mode 1 (Changi Airport Treasure Hunt) ---
+        let changiItemsFound = [false, false, false];
+        function initChangiTreasure() {
+            document.getElementById('container-changi-treasure').classList.remove('hidden');
+            document.getElementById('interaction-mode-badge').innerText = "点击寻宝 (Treasure Hunt)";
+            changiItemsFound = [false, false, false];
+            for (let i = 0; i < 3; i++) {
+                const item = document.getElementById(`changi-item-${i}`);
+                item.style.opacity = "1";
+                item.style.pointerEvents = "auto";
+                document.getElementById(`changi-label-${i}`).className = "text-xs font-bold bg-white px-2 py-1 rounded-xl border border-slate-300 transition-all";
+            }
+        }
+        function foundChangiItem(idx) {
+            if (changiItemsFound[idx]) return;
+            changiItemsFound[idx] = true;
+            playCorrectSound();
+            document.getElementById(`changi-item-${idx}`).style.opacity = "0.3";
+            document.getElementById(`changi-item-${idx}`).style.pointerEvents = "none";
+            const lbl = document.getElementById(`changi-label-${idx}`);
+            lbl.className = "text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded-xl border-2 border-emerald-500 scale-95 transition-all";
+            lbl.innerHTML += " ✅";
+
+            if (changiItemsFound.every(item => item)) {
+                triggerSuccessCelebration("🎉 太赞了！你帮爸爸妈妈找齐了全部过关行李！大雨落入瀑布，开启贴纸宝箱！✈️");
+            }
+        }
+
+        // --- INTERACTION: Mode 2 (Aquarium Memory Match) ---
+        let memoryItems = ["🐡", "🐙", "🦈", "🐚", "🐡", "🐙", "🦈", "🐚"];
+        let flippedIndices = [];
+        let completedPairs = 0;
+        function initAquariumMemory() {
+            document.getElementById('container-aquarium-memory').classList.remove('hidden');
+            document.getElementById('interaction-mode-badge').innerText = "配对翻牌 (Card Matching)";
+            memoryItems.sort(() => Math.random() - 0.5);
+            flippedIndices = [];
+            completedPairs = 0;
+
+            const box = document.getElementById('container-aquarium-memory');
+            box.innerHTML = '';
+            memoryItems.forEach((emoji, idx) => {
+                const el = document.createElement('button');
+                el.className = "aspect-square w-full relative perspective-1000 group cursor-pointer focus:outline-none";
+                el.id = `aq-card-${idx}`;
+                el.onclick = () => flipAquariumCard(idx);
+                el.innerHTML = `
+                    <div class="card-inner w-full h-full duration-300 transform-style-3d relative flex items-center justify-center">
+                        <div class="card-back absolute inset-0 bg-blue-100 border-4 border-blue-900 rounded-2xl flex items-center justify-center text-3xl font-black">
+                            ${emoji}
+                        </div>
+                        <div class="card-front absolute inset-0 bg-blue-500 hover:bg-blue-600 border-4 border-blue-900 rounded-2xl flex items-center justify-center text-white text-3xl font-black">
+                            ❓
+                        </div>
+                    </div>
+                `;
+                box.appendChild(el);
+            });
+        }
+        function flipAquariumCard(idx) {
+            if (flippedIndices.length >= 2 || flippedIndices.includes(idx)) return;
+            playBeep(494, 'sine', 0.08);
+
+            const card = document.getElementById(`aq-card-${idx}`);
+            card.classList.add('card-flipped');
+            flippedIndices.push(idx);
+
+            if (flippedIndices.length === 2) {
+                const i1 = flippedIndices[0];
+                const i2 = flippedIndices[1];
+                if (memoryItems[i1] === memoryItems[i2]) {
+                    setTimeout(() => {
+                        playCorrectSound();
+                        document.getElementById(`aq-card-${i1}`).style.pointerEvents = "none";
+                        document.getElementById(`aq-card-${i2}`).style.pointerEvents = "none";
+                        completedPairs++;
+                        flippedIndices = [];
+                        if (completedPairs === 4) {
+                            triggerSuccessCelebration("🎉 神奇配对成功！小丑鱼和双髻鲨都找到了自己的家，水族馆之门已经为你开启！🐠");
+                        }
+                    }, 500);
+                } else {
+                    setTimeout(() => {
+                        playWrongSound();
+                        document.getElementById(`aq-card-${i1}`).classList.remove('card-flipped');
+                        document.getElementById(`aq-card-${i2}`).classList.remove('card-flipped');
+                        flippedIndices = [];
+                    }, 1200);
+                }
+            }
+        }
+
+        // --- INTERACTION: Mode 3 (Fort Canning Captain Dialogue) ---
+        let canningStep = 0;
+        const canningData = [
+            {
+                english: "Are you ready to see the historic Merlion from our riverboat? ⛴️",
+                chinese: "你准备好坐在我们的河上游船里去看看美丽的鱼尾狮了吗？⛴️",
+                answers: [
+                    { text: "Yes! Let's go! ⛵", correct: true, sfx: "Great choice! (太棒啦！)" },
+                    { text: "No, I am afraid of water. 🌊", correct: false, sfx: "It is extremely safe! Let's try! (大木船非常平稳，不用害怕，我们一起来吧！)" }
+                ]
+            }
+        ];
+        function initCanningDialogue() {
+            document.getElementById('container-canning-dialogue').classList.remove('hidden');
+            document.getElementById('interaction-mode-badge').innerText = "双语英语 (English Talk)";
+            canningStep = 0;
+            renderCanningDialogue();
+        }
+        function renderCanningDialogue() {
+            const step = canningData[canningStep];
+            document.getElementById('canning-english-bubble').innerHTML = `"${step.english}"`;
+            document.getElementById('canning-chinese-bubble').innerHTML = `“${step.chinese}”`;
+
+            const box = document.getElementById('canning-options');
+            box.innerHTML = '';
+            step.answers.forEach((ans, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left bg-white hover:bg-emerald-50 text-slate-800 font-bold py-3 px-4 rounded-2xl border-4 border-blue-900 shadow-sm text-xs transition-all active:scale-95 flex items-center gap-2";
+                btn.onclick = () => submitCanningDialogue(ans, btn);
+                btn.innerHTML = `<span class="bg-emerald-200 text-emerald-950 w-6 h-6 flex items-center justify-center rounded-full text-xs font-black shrink-0">${idx === 0 ? 'A' : 'B'}</span> <span>${ans.text}</span>`;
+                box.appendChild(btn);
+            });
+        }
+        function submitCanningDialogue(ans, btn) {
+            const fbox = document.getElementById('feedback-box');
+            fbox.className = "mt-4 p-4 rounded-2xl border-4 text-center font-bold text-xs block";
+            
+            const btns = document.getElementById('canning-options').querySelectorAll('button');
+            btns.forEach(b => b.disabled = true);
+
+            if (ans.correct) {
+                playCorrectSound();
+                btn.classList.add('border-emerald-500', 'bg-emerald-50');
+                fbox.className = "mt-4 p-4 rounded-2xl border-4 bg-emerald-50 border-emerald-500 text-emerald-800 text-center font-bold text-xs block";
+                fbox.innerHTML = `🗣️ <b>跟着船长一起大声读 (Read with Captain):</b> <br/>"${ans.text}" <br/>船长夸你: ${ans.sfx}`;
+                setTimeout(() => {
+                    triggerSuccessCelebration("🎉 Good Job! 英语学得非常流利，船长给你颁发了一张克拉码头纪念贴纸！⛵");
+                }, 2200);
+            } else {
+                playWrongSound();
+                btn.classList.add('border-red-400', 'bg-red-50');
+                fbox.className = "mt-4 p-4 rounded-2xl border-4 bg-red-50 border-red-400 text-red-800 text-center font-bold text-xs block";
+                fbox.innerHTML = `🗣️ <b>船长提醒：</b> <br/>"${ans.sfx}"`;
+                setTimeout(() => {
+                    btns.forEach(b => b.disabled = false);
+                    btn.classList.remove('border-red-400', 'bg-red-50');
+                    fbox.classList.add('hidden');
+                }, 2000);
+            }
+        }
+
+        // --- INTERACTION: Mode 4 (Merlion Park Quiz) ---
+        const merlionQuiz = {
+            question: "你知道鱼尾狮喷出来的彩虹泉水是从哪里吐出来的吗？",
+            answers: [
+                { text: "眼睛里流出的泪水 😢", correct: false, sfx: "不对哦！鱼尾狮非常威风，它并不是在伤心流眼泪。" },
+                { text: "从它的长尾巴甩出来的 🐟", correct: false, sfx: "不对哦！尾巴在它的身体后边。" },
+                { text: "嘴巴里大口喷出来的 🦁", correct: true, sfx: "答对啦！它每天都张着威风的狮子嘴巴朝大海大口喷射清凉泉水！" }
+            ]
+        };
+        function initMerlionQuiz() {
+            document.getElementById('container-merlion-quiz').classList.remove('hidden');
+            document.getElementById('interaction-mode-badge').innerText = "趣味问答 (Fact Quiz)";
+            document.getElementById('interaction-instruction').innerText = merlionQuiz.question;
+
+            const box = document.getElementById('merlion-quiz-options');
+            box.innerHTML = '';
+            merlionQuiz.answers.forEach((ans, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left bg-white hover:bg-sky-50 text-slate-800 font-bold py-3.5 px-4 rounded-2xl border-4 border-blue-900 shadow-sm text-xs transition-all active:scale-95 flex items-center gap-2";
+                btn.onclick = () => submitMerlionQuiz(ans, btn);
+                btn.innerHTML = `<span class="bg-blue-200 text-blue-950 w-6 h-6 flex items-center justify-center rounded-full text-xs font-black shrink-0">${["A", "B", "C"][idx]}</span> <span>${ans.text}</span>`;
+                box.appendChild(btn);
+            });
+        }
+        function submitMerlionQuiz(ans, btn) {
+            const fbox = document.getElementById('feedback-box');
+            fbox.className = "mt-4 p-4 rounded-2xl border-4 text-center font-bold text-xs block";
+
+            const btns = document.getElementById('merlion-quiz-options').querySelectorAll('button');
+            btns.forEach(b => b.disabled = true);
+
+            if (ans.correct) {
+                playCorrectSound();
+                btn.classList.add('border-emerald-500', 'bg-emerald-50');
+                fbox.className = "mt-4 p-4 rounded-2xl border-4 bg-emerald-50 border-emerald-500 text-emerald-800 text-center font-bold text-xs block";
+                fbox.innerHTML = `🎯 ${ans.sfx}`;
+                setTimeout(() => {
+                    triggerSuccessCelebration("🎉 知识小达人！鱼尾狮被你的智慧折服，向你喷出一枚亮闪闪贴纸！✨");
+                }, 1800);
+            } else {
+                playWrongSound();
+                btn.classList.add('border-red-400', 'bg-red-50');
+                fbox.className = "mt-4 p-4 rounded-2xl border-4 bg-red-50 border-red-400 text-red-800 text-center font-bold text-xs block";
+                fbox.innerHTML = `😮 ${ans.sfx}`;
+                setTimeout(() => {
+                    btns.forEach(b => {
+                        if (b !== btn) b.disabled = false;
+                    });
+                    fbox.classList.add('hidden');
+                }, 2000);
+            }
+        }
+
+        // --- INTERACTION: Mode 5 (Gardens & Cloud Forest Sort) ---
+        let gardensRound = 0;
+        const gardensData = [
+            { name: "仙人掌 🌵 (Desert Cactus)", dome: 0, label: "适合生长在干燥暖和的花穹温室中！" },
+            { name: "兰花王 🌸 (Orchid Queen)", dome: 1, label: "喜欢云雾林里湿润朦胧的高山雾气哦！" },
+            { name: "猪笼草 🍂 (Pitcher Plant)", dome: 1, label: "喜欢捕食小昆虫，是云雾林高山上的奇妙植物！" }
+        ];
+        function initGardensSort() {
+            document.getElementById('container-gardens-sort').classList.remove('hidden');
+            document.getElementById('interaction-mode-badge').innerText = "环保大分类 (Sorting game)";
+            gardensRound = 0;
+            renderGardensSortItem();
+        }
+        function renderGardensSortItem() {
+            if (gardensRound >= gardensData.length) {
+                triggerSuccessCelebration("🎉 完美分拣！你让温室里的奇异奇花异草都回到了家，擎天树夜光秀为你喝彩！🌲");
+                return;
+            }
+            const item = gardensData[gardensRound];
+            document.getElementById('sort-item-emoji').innerText = item.name.split(' ')[0];
+            document.getElementById('sort-item-name').innerText = item.name;
+        }
+        function sortToZone(zoneIdx) {
+            const item = gardensData[gardensRound];
+            const fbox = document.getElementById('feedback-box');
+            fbox.className = "mt-4 p-4 rounded-2xl border-4 text-center font-bold text-xs block";
+
+            if (item.dome === zoneIdx) {
+                playCorrectSound();
+                fbox.className = "mt-4 p-4 rounded-2xl border-4 bg-emerald-50 border-emerald-500 text-emerald-800 text-center font-bold text-xs block";
+                fbox.innerHTML = `🎯 答对啦！ <b>${item.name}</b> 分配正确！${item.label}`;
+                gardensRound++;
+                setTimeout(() => {
+                    fbox.classList.add('hidden');
+                    renderGardensSortItem();
+                }, 1200);
+            } else {
+                playWrongSound();
+                fbox.className = "mt-4 p-4 rounded-2xl border-4 bg-red-50 border-red-400 text-red-800 text-center font-bold text-xs block";
+                fbox.innerHTML = `😮 分配不合适哦！<b>${item.name}</b> 并不是这个区域的植物。想想看它需要很多雾水还是干燥呢？`;
+            }
+        }
+
+        // --- INTERACTION: Mode 6 (Night Safari Flashlight Hunt) ---
+        let safariFound = [false, false, false];
+        function initSafariFlashlight() {
+            document.getElementById('container-safari-flashlight').classList.remove('hidden');
+            document.getElementById('interaction-mode-badge').innerText = "手电筒寻探 (Dark Safari)";
+            safariFound = [false, false, false];
+            for (let i = 0; i < 3; i++) {
+                document.getElementById(`safari-animal-${i}`).style.opacity = "0.05";
+                document.getElementById(`safari-animal-${i}`).style.pointerEvents = "auto";
+                document.getElementById(`safari-lbl-${i}`).className = "text-xs font-bold bg-slate-700 px-2.5 py-1 rounded-xl text-slate-400";
+            }
+            // Secure 50% initial flashlight positioning to guarantee it never appears fully black
+            const overlay = document.getElementById('flashlight-overlay');
+            overlay.style.setProperty('--x', '50%');
+            overlay.style.setProperty('--y', '50%');
+        }
+
+        // Handles mouse moving on desktop / laptop
+        function updateFlashlight(e) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            const overlay = document.getElementById('flashlight-overlay');
+            overlay.style.setProperty('--x', `${x}%`);
+            overlay.style.setProperty('--y', `${y}%`);
+        }
+
+        // Optimized Touch Event for iPad/Tablet: Calls preventDefault ONLY on touchmove to allow clicking on touchstart
+        function updateFlashlightTouch(e, shouldPrevent) {
+            if (shouldPrevent) {
+                e.preventDefault(); // Blocks page scrolling ONLY during active dragging
+            }
+            const touch = e.touches[0];
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = ((touch.clientX - rect.left) / rect.width) * 100;
+            const y = ((touch.clientY - rect.top) / rect.height) * 100;
+            
+            const overlay = document.getElementById('flashlight-overlay');
+            overlay.style.setProperty('--x', `${x}%`);
+            overlay.style.setProperty('--y', `${y}%`);
+        }
+
+        function foundSafariAnimal(idx) {
+            if (safariFound[idx]) return;
+            safariFound[idx] = true;
+            playCorrectSound();
+            
+            // Light up the discovered animal fully
+            const animalBtn = document.getElementById(`safari-animal-${idx}`);
+            animalBtn.style.opacity = "1";
+            animalBtn.style.pointerEvents = "none";
+            
+            const lbl = document.getElementById(`safari-lbl-${idx}`);
+            lbl.className = "text-xs font-bold bg-yellow-400 text-slate-900 px-2.5 py-1 rounded-xl scale-105 transition-all";
+            lbl.innerHTML += " ✅";
+
+            if (safariFound.every(val => val)) {
+                triggerSuccessCelebration("🎉 哇！你的手电筒真厉害，找全了深夜中捉迷藏的野兽们！夜间野生动物贴纸颁发！🐯");
+            }
+        }
+
+        // --- INTERACTION: Mode 7 (Petronas Classify) ---
+        let twinRound = 0;
+        const twinData = [
+            { name: "椰浆饭 🍛 (Nasi Lemak)", country: 1, info: "这是马来西亚的超级国宝传统美味！" },
+            { name: "沙爹肉串 🍢 (Satay)", country: 1, info: "马来西亚夜市里最火的传统烧烤串串！" },
+            { name: "海南鸡饭 🍛 (Chicken Rice)", country: 0, info: "新加坡极负盛名、超级香嫩的国民美食！" }
+        ];
+        function initTwinClassify() {
+            document.getElementById('container-twin-classify').classList.remove('hidden');
+            document.getElementById('interaction-mode-badge').innerText = "特产大作战 (Bilingual sorting)";
+            twinRound = 0;
+            renderTwinItem();
+        }
+        function renderTwinItem() {
+            if (twinRound >= twinData.length) {
+                triggerSuccessCelebration("🎉 太能干了！行李箱理得井井有条，拿到了闪亮雄伟的双子塔贴纸！🏢");
+                return;
+            }
+            const item = twinData[twinRound];
+            document.getElementById('twin-item-emoji').innerText = item.name.split(' ')[0];
+            document.getElementById('twin-item-name').innerText = item.name;
+        }
+        function sortTwinToCountry(cIdx) {
+            const item = twinData[twinRound];
+            const fbox = document.getElementById('feedback-box');
+            fbox.className = "mt-4 p-4 rounded-2xl border-4 text-center font-bold text-xs block";
+
+            if (item.country === cIdx) {
+                playCorrectSound();
+                fbox.className = "mt-4 p-4 rounded-2xl border-4 bg-emerald-50 border-emerald-500 text-emerald-800 text-center font-bold text-xs block";
+                fbox.innerHTML = `🎯 答对啦！ <b>${item.name}</b> 分放正确！${item.info}`;
+                twinRound++;
+                setTimeout(() => {
+                    fbox.classList.add('hidden');
+                    renderTwinItem();
+                }, 1200);
+            } else {
+                playWrongSound();
+                fbox.className = "mt-4 p-4 rounded-2xl border-4 bg-red-50 border-red-400 text-red-800 text-center font-bold text-xs block";
+                fbox.innerHTML = `😮 不对哦！ <b>${item.name}</b> 并不是那里的经典特色，快调整一下试试！`;
+            }
+        }
+
+        // --- INTERACTION: Mode 8 (Batu Caves Dialogue) ---
+        let batuStep = 0;
+        const batuData = [
+            {
+                english: "Can you give me a sweet 'Banana' please? 🍌",
+                chinese: "你能大方地分给我一根甜甜的‘香蕉’吗？🍌",
+                options: [
+                    { text: "Here is a banana! Enjoy! 🍌", correct: true, sfx: "Thank you, friend! (小猴子：谢谢好心人，快上彩虹台阶吧！)" },
+                    { text: "No, this is my chocolate. 🍫", correct: false, sfx: "Ooh ooh! Chocolate is bad for monkeys! (小猴子：巧克力是不适合小动物吃的，换一根香蕉好吗！)" }
+                ]
+            }
+        ];
+        function initBatuDialogue() {
+            document.getElementById('container-batu-dialogue').classList.remove('hidden');
+            document.getElementById('interaction-mode-badge').innerText = "英语交流 (English Talk)";
+            batuStep = 0;
+            renderBatuDialogue();
+        }
+        function renderBatuDialogue() {
+            const step = batuData[batuStep];
+            document.getElementById('batu-english-bubble').innerHTML = `"${step.english}"`;
+            document.getElementById('batu-chinese-bubble').innerHTML = `“${step.chinese}”`;
+
+            const box = document.getElementById('batu-options');
+            box.innerHTML = '';
+            step.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left bg-white hover:bg-yellow-50 text-slate-800 font-bold py-3 px-4 rounded-2xl border-4 border-blue-900 shadow-sm text-xs transition-all active:scale-95 flex items-center gap-2";
+                btn.onclick = () => chooseBatuOption(opt, btn);
+                btn.innerHTML = `<span class="bg-yellow-200 text-yellow-950 w-6 h-6 flex items-center justify-center rounded-full text-xs font-black shrink-0">${idx === 0 ? 'A' : 'B'}</span> <span>${opt.text}</span>`;
+                box.appendChild(btn);
+            });
+        }
+        function chooseBatuOption(opt, btn) {
+            const fbox = document.getElementById('feedback-box');
+            fbox.className = "mt-4 p-4 rounded-2xl border-4 text-center font-bold text-xs block";
+
+            const btns = document.getElementById('batu-options').querySelectorAll('button');
+            btns.forEach(b => b.disabled = true);
+
+            if (opt.correct) {
+                playCorrectSound();
+                btn.classList.add('border-emerald-500', 'bg-emerald-50');
+                fbox.className = "mt-4 p-4 rounded-2xl border-4 bg-emerald-50 border-emerald-500 text-emerald-800 text-center font-bold text-xs block";
+                fbox.innerHTML = `🗣️ <b>大胆读出这一句 (Say aloud with Monkey):</b> <br/>"${opt.text}" <br/>小猴子开心回应: ${opt.sfx}`;
+                setTimeout(() => {
+                    triggerSuccessCelebration("🎉 Super English! 调皮的猴子放行了，彩虹黑风洞贴纸成功解锁！🌈");
+                }, 2200);
+            } else {
+                playWrongSound();
+                btn.classList.add('border-red-400', 'bg-red-50');
+                fbox.className = "mt-4 p-4 rounded-2xl border-4 bg-red-50 border-red-400 text-red-800 text-center font-bold text-xs block";
+                fbox.innerHTML = `🗣️ <b>猴子吱吱抗议：</b> <br/>"${opt.sfx}"`;
+                setTimeout(() => {
+                    btns.forEach(b => b.disabled = false);
+                    btn.classList.remove('border-red-400', 'bg-red-50');
+                    fbox.classList.add('hidden');
+                }, 2000);
+            }
+        }
+
+        // --- CELEBRATION FLOW ---
+        function triggerSuccessCelebration(msg) {
+            const fbox = document.getElementById('feedback-box');
+            fbox.className = "mt-4 p-4 rounded-2xl border-4 bg-emerald-50 border-emerald-500 text-emerald-800 text-center font-bold text-sm block animate-bounce-slow";
+            fbox.innerHTML = msg;
+
+            setTimeout(() => {
+                const dest = destinations[activeQuestId];
+                document.getElementById('reward-sticker-emoji').innerText = dest.emoji;
+                document.getElementById('reward-sticker-text').innerHTML = `你完成了 ${dest.title} 的神奇探险，赢得了一枚纪念章！`;
+                document.getElementById('reward-modal').classList.remove('hidden');
+            }, 1800);
+        }
+
+        function claimSticker() {
+            playBeep(587.33, 'triangle', 0.1);
+            stickersEarned[activeQuestId] = true;
+            updateAlbumDisplay();
+
+            document.getElementById('reward-modal').classList.add('hidden');
+            goBackToMap();
+
+            if (stickersEarned.every(val => val === true)) {
+                setTimeout(() => {
+                    playVictoryTones();
+                    document.getElementById('win-modal').classList.remove('hidden');
+                }, 800);
+            }
+        }
+
+        function updateAlbumDisplay() {
+            let count = 0;
+            stickersEarned.forEach((earned, index) => {
+                const albumEl = document.getElementById(`album-item-${index}`);
+                const pinEl = document.getElementById(`pin-${index}`);
+                if (earned) {
+                    count++;
+                    albumEl.classList.remove('opacity-35', 'border-dashed');
+                    albumEl.classList.add('opacity-100', 'border-solid', 'bg-yellow-100', 'border-yellow-400', 'scale-105', 'rotate-3');
+                    if (pinEl) {
+                        const ping = pinEl.querySelector('.animate-ping');
+                        if (ping) ping.classList.add('hidden');
+                    }
+                } else {
+                    albumEl.classList.add('opacity-35', 'border-dashed');
+                    albumEl.classList.remove('opacity-100', 'border-solid', 'bg-yellow-100', 'border-yellow-400', 'scale-105', 'rotate-3');
+                }
+            });
+            document.getElementById('star-count').innerText = count;
+            document.getElementById('album-count-side').innerText = `(${count}/8)`;
+        }
+
+        function restartGame() {
+            playBeep(440, 'sine', 0.1);
+            stickersEarned = Array(8).fill(false);
+            updateAlbumDisplay();
+            document.getElementById('win-modal').classList.add('hidden');
+            goBackToMap();
+
+            for (let i = 0; i < 8; i++) {
+                const pin = document.getElementById(`pin-${i}`);
+                if (pin) {
+                    const ping = pin.querySelector('.animate-ping');
+                    if (ping) ping.classList.remove('hidden');
+                }
+            }
+        }
+
+        // INIT LOAD
+        window.onload = function() {
+            updateAlbumDisplay();
+        }
+    </script>
+</body>
+</html>
